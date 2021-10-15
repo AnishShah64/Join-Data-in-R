@@ -1,6 +1,6 @@
 ---
 title: "Joining Data using Dplyr Library"
-author: "Anish Shah (13798362)"
+author: "Anish Shah"
 output: 
     html_document:
     toc: true
