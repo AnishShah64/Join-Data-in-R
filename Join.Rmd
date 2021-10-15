@@ -1,0 +1,154 @@
+---
+title: "Joining Data using Dplyr Library"
+author: "Anish Shah (13798362)"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+date: "`r format(Sys.time(), '%d %B %Y')`"    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fid.align = 'center', echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+* **Introduction**
+* **Loading Library**
+* **Importing Datasets**
+* **Joining Data Frames**
+* **Useful Resources**
+* **References**
+
+## Introduction
+
+Often when working and analyzing with data, we might encounter situations where datasets are spread across multiple tables that are perhaps exported from a database or a standalone CSVs. When this situation arises, we might want to merge or join the data to make it easier to analyze them in combination. Regardless of the reason for splitting data sets into multiple tables, they should always be formatted in such a way that there is at least one common column between the tables so that they can be merged as needed. In this R Vignette we will explore how to use the `join` suite of functions found in the dplyr package to merge these data tables.
+
+To illustrate, we will use wine dataset to demonstrate different join functions. We will use two data sets, where one dataset contains information on the ingredients of wine like acidic levels, sugar contents, sulphur dioxide content, density etc.. The second dataset contains information regarding the quality and nature of the wine.
+
+## Loading Library
+
+```{r}
+# Loading the Library
+library(dplyr)
+```
+
+
+## Importing Datasets
+```{r}
+# Importing data from file 1
+table_A = read.csv("C:/Users/Varsha/Desktop/Wines/wines.csv")
+
+# Importing Data from file 2
+table_B = read.csv("C:/Users/Varsha/Desktop/Wines/wine2.csv")
+
+# Narrowing dataframe using select function
+table_A =table_A %>% select(wine.ID,fixed.acidity, volatile.acidity, citric.acid )
+```
+
+
+## Joining Data Frames
+
+### *Inner Join*
+
+An `inner_join` also known as natural join, is the most usual join of datasets we will encounter.`inner_join` will help to merge two data frames in one that has the common elements of both. `inner_join` returns all the observations from `table_A` where there are matching observations in  `table_B` and all the columns from `table_A` and `table_B`.
+
+```{r}
+
+# inner join syntax
+join1 = inner_join(table_A, table_B, by = "wine.ID")
+# Executing assigned variable
+join1
+
+```
+*In the above example, the function returns the value showing the results where the conditions are met. We lose few observations from the table A because remaining `wine.ID` does not appear in the `table_B`.*
+
+
+### *Left Join*
+
+`left_join` will return all the observations from the table we specify on the left  and match them to records from the table on the right. However, if there isn't a match in the second table, then it will return **NA** values for that particular observation. If there are multiple combinations among both the tables, all combinations of the matches are returned
+```{r}
+
+# left join syntax using dplyr
+join2 = left_join(table_A,table_B, by = "wine.ID")
+# Executing assigned variable
+join2
+
+```
+*In the above example, the corresponding `wine.ID = 1`, is on the first data set but not on the second, so the corresponding missing values are displayed by `NAs`.*
+
+### *Right Join*
+
+`right_join` in R is exactly opposite to the left outer join. Right Join consists on joining all the rows in the second data frame with the corresponding on the first. If there isn't a match in the first table, then it will return **NA** for the observations that do not match.
+```{r}
+
+# right join syntax using dplyr
+join3 = right_join(table_A,table_B, by = "wine.ID")
+# Executing assigned variable
+join3
+
+```
+*As wine ID 28 & 31 are on the second dataset but not on the first, the corresponding values of that particular `ids` are not available.*
+
+
+### *Full Join*
+
+`full_join` , also known as outer join, merges all the columns of both the dataset into one for all the elements. It returns all the records in the new table whether it matches either on the left or the right table. If the table observations match, then a join will be executed else it will return **NA** in places where the conditions aren't met.
+
+```{r}
+
+#full join syntax using dplyr
+join4 = full_join(table_A, table_B, by = "wine.ID")
+# Executing assigned variable
+join4
+```   
+
+*In the above example, We have entirely merged both the data frames, thus we get all the columns and all the observations from both data frames. The necessary values are filled with **NA**where the observations are not present in either of the data frames.*
+
+
+### *Semi Join*
+
+`semi_join` is arguably little more complex than the previous examples, though it is pretty straight-forward. This function creates a new table where it will return all observations from the first table where there is corresponding matching observations in second, but instead of the new table combining both the tables, it only contains data from the first table.
+```{r}
+
+# semi join syntax using dplyr
+join5 = semi_join(table_A,table_B, by = "wine.ID")
+# Executing assigned variable
+join5
+
+```
+
+*A semi join differs from the inner join because an inner join will return one row of `table_A` for each matching row of `table_B`, where semi join will never duplicate observations of `table_A`.*   
+
+### *Anti Join*
+
+`anti_join` will return all of the rows from the first table where there are not matching values from the second.The new anti join table will only contain observations from the first table, based on the join predicate specified.
+
+```{r}
+
+# anti join syntax using dplyr
+join6 =  anti_join(table_A,table_B, by = "wine.ID")
+# Executing assigned variable
+join6
+
+```
+*The above output shows that it returns all observations from `table_A` where there are not matching values in `table_B`, keeping just the columns from `table_A`.*
+
+
+
+## Useful Resources:
+
+If you would like to find out more about joining data with dplyr, check the resources:
+
+<https://dplyr.tidyverse.org/reference/join.html>
+
+<http://www.sql-join.com/>
+
+
+## References
+
+* Emblem, H. (2018). Joining Data with dplyr in R. [online] Medium. Available at: <https://hollyemblem.medium.com/joining-data-with-dplyr-in-r-874698eb8898>
+
+* www.rdocumentation.org. (n.d.). join function - RDocumentation. [online] Available at: <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join> 
+
+* remiller1450.github.io. (n.d.). Introduction to Merging Data Tables in R. [online] Available at: <https://remiller1450.github.io/s230s19/Merging_and_Joining.html>
